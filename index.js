@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
+const PORT = process.env.PORT || 3000;
 
 const questions= [
     {
@@ -156,6 +157,6 @@ app.use(
   });
   
   
-app.listen(3000, () => {
-    console.log("Webserver is running in port 3000");
+app.listen(PORT, () => {
+    console.log(`Webserver is running in port ${PORT}`);
   });

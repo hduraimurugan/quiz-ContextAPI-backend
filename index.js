@@ -11,34 +11,61 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({ origin: "*" }));
+
 app.use(express.json());
 
-let db;
+// let db;
 
-// Connect to MongoDB once at the start
-MongoClient.connect(URL)
-  .then((client) => {
-    db = client.db("quiz");
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
+// // Connect to MongoDB once at the start
+// MongoClient.connect(URL)
+//   .then((client) => {
+//     db = client.db("quiz");
+//     console.log("Connected to MongoDB");
+//   })
+//   .catch((error) => {
+//     console.error("Error connecting to MongoDB:", error);
+//   });
+
+//   app.get("/questions", async (req, res) => {
+//     try {
+//       if (!db) {
+//         throw new Error("Database not connected");
+//       }
+  
+//       // Select the collection
+//       const collection = db.collection("questions");
+  
+//       // Fetch questions from the collection
+//       const questions = await collection.find({}).toArray();
+//       res.json(questions);
+//     } catch (error) {
+//       console.error("Error fetching questions:", error);
+//       res.status(500).json({ message: "Something went wrong" });
+//     }
+//   });
+
   app.get("/questions", async (req, res) => {
     try {
-      if (!db) {
-        throw new Error("Database not connected");
-      }
+      // 1. Connect the Database Server
+      const client = await MongoClient.connect(URL);
   
-      // Select the collection
+      // 2. Select the Database
+      const db = client.db("quiz");
+  
+      // 3. Select the collection
       const collection = db.collection("questions");
   
-      // Fetch questions from the collection
       const questions = await collection.find({}).toArray();
+  
+      // 5. Close the connection
+      await client.close();
+  
       res.json(questions);
+
     } catch (error) {
-      console.error("Error fetching questions:", error);
-      res.status(500).json({ message: "Something went wrong" });
+      res.status(500).json({
+        message: "Something went wrong",
+      });
     }
   });
 

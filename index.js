@@ -24,25 +24,23 @@ MongoClient.connect(URL)
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error);
   });
-
-app.get("/questions", async (req, res) => {
-  try {
-    // Select the collection
-    const collection = db.collection("questions");
-    console.log(collection);
-    
-
-    // Fetch questions from the collection
-    const questions = await collection.find({}).toArray();
-    console.log(questions);
-
-    res.json(questions);
-
-  } catch (error) {
-    console.error("Error fetching questions:", error);
-    res.status(500).json({ message: "Something went wrong" });
-  }
-});
+  app.get("/questions", async (req, res) => {
+    try {
+      if (!db) {
+        throw new Error("Database not connected");
+      }
+  
+      // Select the collection
+      const collection = db.collection("questions");
+  
+      // Fetch questions from the collection
+      const questions = await collection.find({}).toArray();
+      res.json(questions);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  });
 
 app.listen(PORT, () => {
   console.log(`Webserver is running on port ${PORT}`);

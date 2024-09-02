@@ -38,6 +38,7 @@ app.use(express.json());
 //       // Fetch questions from the collection
 //       const questions = await collection.find({}).toArray();
 //       res.json(questions);
+
 //     } catch (error) {
 //       console.error("Error fetching questions:", error);
 //       res.status(500).json({ message: "Something went wrong" });
@@ -48,18 +49,26 @@ app.use(express.json());
     try {
       // 1. Connect the Database Server
       const client = await MongoClient.connect(URL);
+      
+      
   
       // 2. Select the Database
       const db = client.db("quiz");
+     
+      
   
       // 3. Select the collection
       const collection = db.collection("questions");
+     
+      
   
       const questions = await collection.find({}).toArray();
   
       // 5. Close the connection
       await client.close();
   
+      console.log(questions);
+      
       res.json(questions);
 
     } catch (error) {

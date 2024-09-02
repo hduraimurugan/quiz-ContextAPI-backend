@@ -16,7 +16,7 @@ app.use(express.json());
 let db;
 
 // Connect to MongoDB once at the start
-MongoClient.connect(URL)
+MongoClient.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((client) => {
     db = client.db("quiz");
     console.log("Connected to MongoDB");
@@ -29,11 +29,14 @@ app.get("/questions", async (req, res) => {
   try {
     // Select the collection
     const collection = db.collection("questions");
+    console.log(collection);
+    
 
     // Fetch questions from the collection
     const questions = await collection.find({}).toArray();
 
     res.json(questions);
+
   } catch (error) {
     console.error("Error fetching questions:", error);
     res.status(500).json({ message: "Something went wrong" });

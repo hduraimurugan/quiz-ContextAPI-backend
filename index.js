@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const app = express();
-
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -11,72 +10,39 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({ origin: "*" }));
-
 app.use(express.json());
 
-// let db;
-
-// // Connect to MongoDB once at the start
-// MongoClient.connect(URL)
-//   .then((client) => {
-//     db = client.db("quiz");
-//     console.log("Connected to MongoDB");
-//   })
-//   .catch((error) => {
-//     console.error("Error connecting to MongoDB:", error);
-//   });
-
-//   app.get("/questions", async (req, res) => {
-//     try {
-//       if (!db) {
-//         throw new Error("Database not connected");
-//       }
-  
-//       // Select the collection
-//       const collection = db.collection("questions");
-  
-//       // Fetch questions from the collection
-//       const questions = await collection.find({}).toArray();
-//       res.json(questions);
-
-//     } catch (error) {
-//       console.error("Error fetching questions:", error);
-//       res.status(500).json({ message: "Something went wrong" });
-//     }
-//   });
-
-  app.get("/questions", async (req, res) => {
-    try {
-      // 1. Connect the Database Server
-      const client = await MongoClient.connect(URL);
-      
-      
-  
-      // 2. Select the Database
-      const db = client.db("quiz");
-     
-      
-  
-      // 3. Select the collection
-      const collection = db.collection("questions");
-     
-      
-  
-      const questions = await collection.find({}).toArray();
-  
-      // 5. Close the connection
-      await client.close();
-  
-      console.log(questions);
-      
-      res.json(questions);
-
-    } catch (error) {
-      res.status(500).json({
-        message: "Something went wrong",
-      });
-    }
+// Connect to MongoDB once at the start
+let db;
+MongoClient.connect(URL)
+  .then((client) => {
+    db = client.db("quiz");
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+    process.exit(1); // Exit process if unable to connect to MongoDB
   });
+
+app.get("/questions", async (req, res) => {
+  try {
+    if (!db) {
+      throw new Error("Database not connected");
+    }
+
+    // Select the collection
+    const collection = db.collection("questions");
+
+    // Fetch questions from the collection
+    const questions = await collection.find({}).toArray();
+    
+    res.json(questions);
+
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Webserver is running on port ${PORT}`);

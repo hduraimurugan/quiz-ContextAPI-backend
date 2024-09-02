@@ -16,7 +16,7 @@ app.use(express.json());
 let db;
 
 // Connect to MongoDB once at the start
-MongoClient.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
+MongoClient.connect(URL)
   .then((client) => {
     db = client.db("quiz");
     console.log("Connected to MongoDB");
@@ -34,6 +34,7 @@ app.get("/questions", async (req, res) => {
 
     // Fetch questions from the collection
     const questions = await collection.find({}).toArray();
+    console.log(questions);
 
     res.json(questions);
 

@@ -9,7 +9,7 @@ const URL = process.env.DB;
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "https://quiz-context-api.vercel.app/" }));
 app.use(express.json());
 
 

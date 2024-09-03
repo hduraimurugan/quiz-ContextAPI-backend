@@ -12,30 +12,23 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// Connect to MongoDB once at the start
-let db;
-MongoClient.connect(URL)
-  .then((client) => {
-    db = client.db("quiz");
-    console.log("Connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-    process.exit(1); // Exit process if unable to connect to MongoDB
-  });
+
 
 app.get("/questions", async (req, res) => {
   try {
-    if (!db) {
-      throw new Error("Database not connected");
-    }
+    // 1. Connect the Database Server
+    const connection = await MongoClient.connect(URL);
+
+    // 2. Select the Database
+    const db = connection.db("quiz");
+
 
     // Select the collection
     const collection = db.collection("questions");
 
     // Fetch questions from the collection
     const questions = await collection.find({}).toArray();
-    
+
     res.json(questions);
 
   } catch (error) {
